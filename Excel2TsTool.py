@@ -8,7 +8,7 @@ import xlrd
 
 
 # 读取Excel
-def readExcel(file, filePrefix, typeList, mapList, initList):
+def readExcel(file, filePrefix, typeList, mapList, initList,fileName):
     # 打开Excel文件
     workbook = xlrd.open_workbook(file)
     # 获取所有sheet
@@ -48,7 +48,7 @@ def readExcel(file, filePrefix, typeList, mapList, initList):
 
         # 新建一个map
         map = "/** %s_DataTableMap %s*/\n" % (filePrefix, cell_value)
-        map += "public static %s_DataTableMap:Map<number,%s_DataTableType> = new Map<number,%s_DataTableType>();\n" % (
+        map += "public static %sDataTableMap:Map<number,%s_DataTableType> = new Map<number,%s_DataTableType>();\n" % (
             filePrefix, filePrefix, filePrefix)
         mapList += map
 
@@ -62,7 +62,7 @@ def readExcel(file, filePrefix, typeList, mapList, initList):
             # 声明id
             id = worksheet.cell_value(j, 1)
 
-            inits += "this.%s_DataTableMap.set(%s,{" % (filePrefix, int(id))
+            inits += "%sDataTable.%sDataTableMap.set(%s,{" % (fileName,filePrefix, int(id))
 
             kv = ""
             for i in range(1, ncols):
@@ -75,9 +75,9 @@ def readExcel(file, filePrefix, typeList, mapList, initList):
                         kv += "%s:true," % (key)
                     elif value == "false":
                         kv += "%s:false," % (key)
-                    elif  isType(value, int):
+                    elif isType(value, int):
                         kv += "%s:%s," % (key, int(value))
-                    elif  isType(value, float):
+                    elif isType(value, float):
                         kv += "%s:%s," % (key, float(value))
                     elif isinstance(value, str) and i != 1:
                         kv += "%s:\"%s\"," % (key, value)
@@ -89,6 +89,7 @@ def readExcel(file, filePrefix, typeList, mapList, initList):
         # 返回,typeList,mapList,initList
         return typeList, mapList, initList
 
+
 def isType(value, type):
     try:
         type(value)
@@ -96,8 +97,15 @@ def isType(value, type):
     except ValueError:
         return False
 
+
 # 读取当前目录下的所有Excel
 def readAllExcel():
+
+    fileName = input("请输入TS文件名:默认为 DataTable \n")
+
+    if fileName == "":
+        fileName = "DataTable"
+
     # 获取当前目录
     curPath = os.getcwd()
     # 获取当前目录下的所有文件
@@ -122,24 +130,23 @@ def readAllExcel():
         # 判断是否是Excel文件
         if fileSuffix == ".xlsx" or fileSuffix == ".xls":
             # 获取readExcel返回的typeList,mapList,initList
-            typeList, mapList, initList = readExcel(file, filePrefix, typeList,
-                                                    mapList, initList)
+            typeList, mapList, initList = readExcel(file, filePrefix, typeList,mapList, initList,fileName)
 
     buff += "/*\n* @Author: NoRain\n* @Date: 2023-03-12 20:55:48\n* @Last Modified by:   NoRain\n* @Last Modified time: 2023-03-12 20:55:48\n*/\n"
     buff += typeList
-    buff += "/** DataTable数据类 */\n"
-    buff += "export default class DataTable {\n"
+    buff += "/** %sDataTable数据类 */\n" % fileName
+    buff += "export default class %sDataTable {\n" % fileName
     buff += mapList
     buff += "/**初始化 */\n"
-    buff += "static Init() {\n"
+    buff += "constructor() {\n"
     buff += initList
     buff += "}"
     buff += "}"
-    # 把buff以Utf-8写入到DataTable.ts
-    with open("DataTable.ts", "w", encoding="utf-8") as f:
+    # 把buff以Utf-8写入到TS文件中
+    with open(fileName + "DataTable.ts", "w", encoding="utf-8") as f:
         f.write(buff)
     print("转换完成")
-    print("什么叫战术拼接大师啊/双手叉腰,后仰,大笑")
+    # print("什么叫战术拼接大师啊/双手叉腰,后仰,大笑")
 
 
 readAllExcel()
