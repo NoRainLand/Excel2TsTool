@@ -63,7 +63,7 @@ def readExcel(file, filePrefix, typeList, mapList, initList, fileName):
             # 声明id
             id = worksheet.cell_value(j, 1)
 
-            inits += "%sDataTable.%sDataTableMap.set(%s,{" % (
+            inits += "%s.%sDataTableMap.set(%s,{" % (
                 fileName, filePrefix, int(id))
 
             kv = ""
@@ -141,8 +141,8 @@ def readAllExcel():
             * @Last Modified time: 2023-03-12 20:55:48\n*/\n"
 
     buff += typeList
-    buff += "/** %sDataTable数据类 */\n" % fileName
-    buff += "export default class %sDataTable {\n" % fileName
+    buff += "/** %s数据类 */\n" % fileName
+    buff += "export default class %s {\n" % fileName
     buff += mapList
     buff += "/**初始化 */\n"
     buff += "constructor() {\n"
@@ -150,7 +150,7 @@ def readAllExcel():
     buff += "}"
     buff += "}"
     # 把buff以Utf-8写入到TS文件中
-    with open(fileName + "DataTable.ts", "w", encoding="utf-8") as f:
+    with open(fileName + ".ts", "w", encoding="utf-8") as f:
         f.write(buff)
     print("转换完成")
     # print("什么叫战术拼接大师啊/双手叉腰,后仰,大笑")
