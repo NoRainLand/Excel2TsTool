@@ -69,20 +69,32 @@ def readExcel(file, filePrefix, typeList, mapList, initList):
                 # 获取每一列内容
                 value = worksheet.cell_value(j, i)
                 key = worksheet.cell_value(2, i)
-                # 判定value是否为bool类型
-                if value == "true":
-                    kv += "%s:true," % (key)
-                elif value == "false":
-                    kv += "%s:false," % (key)
-                elif isinstance(value, str) and i != 1:
-                    kv += "%s:\"%s\"," % (key, value)
-                else:
-                    kv += "%s:%s," % (key, value)
+                if key != "" and value != "":
+                    # 判定value是否为bool类型
+                    if value == "true":
+                        kv += "%s:true," % (key)
+                    elif value == "false":
+                        kv += "%s:false," % (key)
+                    elif isNum(value, int) or isNum(value, float):
+                        kv += "%s:%s," % (key, value)
+                    elif isinstance(value, str) and i != 1:
+                        kv += "%s:\"%s\"," % (key, value)
+                    else:
+                        kv += "%s:%s," % (key, value)
             inits += kv
             inits += "});\n"
             initList += inits
         # 返回,typeList,mapList,initList
         return typeList, mapList, initList
+
+
+# 判定value是否为数字类型
+def isNum(value, type):
+    try:
+        type(value)
+        return True
+    except ValueError:
+        return False
 
 
 # 读取当前目录下的所有Excel
@@ -129,5 +141,6 @@ def readAllExcel():
         f.write(buff)
     print("转换完成")
     print("什么叫战术拼接大师啊/双手叉腰,后仰,大笑")
+
 
 readAllExcel()
