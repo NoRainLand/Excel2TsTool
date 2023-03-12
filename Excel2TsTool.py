@@ -1,14 +1,14 @@
 # Excel转Ts工具
 # 全部代码均由GitHub用户Copilot编写(本人辅助)
 
-#pylint: disable=invalid-name
+# pylint: disable=invalid-name
 import os
 
 import xlrd
 
 
 # 读取Excel
-def readExcel(file, filePrefix, typeList, mapList, initList,fileName):
+def readExcel(file, filePrefix, typeList, mapList, initList, fileName):
     # 打开Excel文件
     workbook = xlrd.open_workbook(file)
     # 获取所有sheet
@@ -48,8 +48,9 @@ def readExcel(file, filePrefix, typeList, mapList, initList,fileName):
 
         # 新建一个map
         map = "/** %s_DataTableMap %s*/\n" % (filePrefix, cell_value)
-        map += "public static %sDataTableMap:Map<number,%s_DataTableType> = new Map<number,%s_DataTableType>();\n" % (
-            filePrefix, filePrefix, filePrefix)
+        map += "public static %sDataTableMap:Map<number,%s_DataTableType> \
+            = new Map<number,%s_DataTableType>();\n" % (filePrefix, filePrefix,
+                                                        filePrefix)
         mapList += map
 
         # 获取其他行每一列内容
@@ -62,7 +63,8 @@ def readExcel(file, filePrefix, typeList, mapList, initList,fileName):
             # 声明id
             id = worksheet.cell_value(j, 1)
 
-            inits += "%sDataTable.%sDataTableMap.set(%s,{" % (fileName,filePrefix, int(id))
+            inits += "%sDataTable.%sDataTableMap.set(%s,{" % (
+                fileName, filePrefix, int(id))
 
             kv = ""
             for i in range(1, ncols):
@@ -123,16 +125,21 @@ def readAllExcel():
 
     # 遍历所有文件
     for file in files:
-        #获取文件前缀
+        # 获取文件前缀
         filePrefix = os.path.splitext(file)[0]
         # 获取文件后缀
         fileSuffix = os.path.splitext(file)[1]
         # 判断是否是Excel文件
         if fileSuffix == ".xlsx" or fileSuffix == ".xls":
             # 获取readExcel返回的typeList,mapList,initList
-            typeList, mapList, initList = readExcel(file, filePrefix, typeList,mapList, initList,fileName)
+            typeList, mapList, initList = readExcel(file, filePrefix, typeList,
+                                                    mapList, initList,
+                                                    fileName)
 
-    buff += "/*\n* @Author: NoRain\n* @Date: 2023-03-12 20:55:48\n* @Last Modified by:   NoRain\n* @Last Modified time: 2023-03-12 20:55:48\n*/\n"
+    buff += "/*\n* @Author: NoRain\n* @Date: 2023-03-12 20:55:48\n* @Last \
+        Modified by:   NoRain\n\
+            * @Last Modified time: 2023-03-12 20:55:48\n*/\n"
+
     buff += typeList
     buff += "/** %sDataTable数据类 */\n" % fileName
     buff += "export default class %sDataTable {\n" % fileName
