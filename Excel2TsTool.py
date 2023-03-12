@@ -62,7 +62,7 @@ def readExcel(file, filePrefix, typeList, mapList, initList):
             # 声明id
             id = worksheet.cell_value(j, 1)
 
-            inits += "this.%s_DataTableMap.set(%s,{" % (filePrefix, id)
+            inits += "this.%s_DataTableMap.set(%s,{" % (filePrefix, int(id))
 
             kv = ""
             for i in range(1, ncols):
@@ -75,8 +75,10 @@ def readExcel(file, filePrefix, typeList, mapList, initList):
                         kv += "%s:true," % (key)
                     elif value == "false":
                         kv += "%s:false," % (key)
-                    elif isNum(value, int) or isNum(value, float):
-                        kv += "%s:%s," % (key, value)
+                    elif  isType(value, int):
+                        kv += "%s:%s," % (key, int(value))
+                    elif  isType(value, float):
+                        kv += "%s:%s," % (key, float(value))
                     elif isinstance(value, str) and i != 1:
                         kv += "%s:\"%s\"," % (key, value)
                     else:
@@ -87,15 +89,12 @@ def readExcel(file, filePrefix, typeList, mapList, initList):
         # 返回,typeList,mapList,initList
         return typeList, mapList, initList
 
-
-# 判定value是否为数字类型
-def isNum(value, type):
+def isType(value, type):
     try:
         type(value)
         return True
     except ValueError:
         return False
-
 
 # 读取当前目录下的所有Excel
 def readAllExcel():
