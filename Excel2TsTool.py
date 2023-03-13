@@ -78,10 +78,18 @@ def readExcel(file, filePrefix, typeList, mapList, initList, fileName):
                     elif value == "false":
                         kv += "%s:false," % (key)
                     elif isType(value, int):
-                        kv += "%s:%s," % (key, int(value))
+                        # 判定value小数点之后是否为0
+                        if float(value) % 1 == 0:
+                            kv += "%s:%s," % (key, int(value))
+                        else:
+                            kv += "%s:%s," % (key, value)
                     elif isType(value, float):
                         kv += "%s:%s," % (key, float(value))
                     elif isinstance(value, str) and i != 1:
+                        # 判定value是否以assets开头
+                        if value.startswith("assets"):
+                            # 把value中的\替换成\\
+                            value = value.replace("\\", "\\\\")
                         kv += "%s:\"%s\"," % (key, value)
                     else:
                         kv += "%s:%s," % (key, value)
@@ -145,7 +153,7 @@ def readAllExcel():
     buff += "export default class %s {\n" % fileName
     buff += mapList
     buff += "/**初始化 */\n"
-    buff += "constructor() {\n"
+    buff += "static Init() {\n"
     buff += initList
     buff += "}"
     buff += "}"
